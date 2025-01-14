@@ -42,6 +42,9 @@ set(OV_VERSION "2024.4.0.16579.c3152d32c9c_x86_64")
 set(OV_STORAGE_URL "https://storage.openvinotoolkit.org/repositories/openvino/packages")
 set(OV_NIGHTLY_COMMIT "2024.3.0-15502-66093834e38")
 
+set(DOWNLOAD_OPENVINO_BINARY False)
+
+if (DOWNLOAD_OPENVINO_BINARY)
 if (WIN32)
     if(NOT OV_LIBRARY_URL)
         if (${OV_VERSION_SHORT} STREQUAL "nightly")
@@ -86,6 +89,15 @@ FetchContent_MakeAvailable(openvino)
 
 find_package(OpenVINO REQUIRED PATHS ${openvino_SOURCE_DIR}/runtime/cmake)
 
+else()
+
+find_package(OpenVINO REQUIRED)
+
+endif() # DOWNLOAD_OPENVINO_BINARY
+
+set(COPY_OPENVINO_RUNTIME False)
+
+if(COPY_OPENVINO_RUNTIME)
 if (WIN32)
     set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
     file(GLOB OpenVINObin ${openvino_SOURCE_DIR}/runtime/bin/intel64/Release/*)
@@ -102,6 +114,7 @@ if(SETUPTOOL_BUILD)
     file(GLOB OpenVINOPython ${openvino_SOURCE_DIR}/python/openvino/*)
     file(COPY ${OpenVINOPython} DESTINATION ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/../external/openvino)
 endif()
+endif() # COPY_OPENVINO_RUNTIME
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
