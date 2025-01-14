@@ -8,6 +8,7 @@ import numpy as np
 import warnings
 import ctypes
 import sys
+import openvino
 import os
 
 handler = ctypes.POINTER(ctypes.c_char)
@@ -28,14 +29,15 @@ def load_library() -> ctypes.CDLL:
         ctypes.CDLL: The loaded dynamic library
     """
     path = os.path.dirname(os.path.abspath(__file__))
-    if "openvino" in sys.modules:
-        warnings.warn(
-            "OpenVINO library is already loaded. It might interfere with NPU acceleration library if it uses an old version.",
-            stacklevel=2,
-        )
-
-    external_path = os.path.join(path, "..", "external")
-    sys.path.insert(0, external_path)
+    # XXX: Tries to load the included copy of OpenVINO's Python modules, which we don't ship (we just import it above)
+    #if "openvino" in sys.modules:
+    #    warnings.warn(
+    #        "OpenVINO library is already loaded. It might interfere with NPU acceleration library if it uses an old version.",
+    #        stacklevel=2,
+    #    )
+    #
+    #external_path = os.path.join(path, "..", "external")
+    #sys.path.insert(0, external_path)
 
     if sys.platform == "win32":
         dll_path = os.path.join(path, "..", "lib", "Release")
@@ -47,10 +49,13 @@ def load_library() -> ctypes.CDLL:
         )  # , winmode=0)
     elif sys.platform == "linux":
         dll_path = os.path.join(path, "..", "lib")
-        sys.path.append(dll_path)
+        # XXX: Don't try to add random dynamic libraries from this path.
+        #sys.path.append(dll_path)
         # In Linux it is required to explicitly load openvino lib
-        _ = ctypes.CDLL(os.path.join(dll_path, "libopenvino.so"))
+        # XXX: No it isn't, only when you weirdos bundle it with your python sources.
+        #_ = ctypes.CDLL(os.path.join(dll_path, "libopenvino.so"))
         lib = ctypes.CDLL(
+        # This one is part of the python code and is unversioned.
             os.path.join(dll_path, "libintel_npu_acceleration_library.so")
         )
     else:
