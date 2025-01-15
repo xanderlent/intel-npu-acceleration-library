@@ -125,6 +125,6 @@ add_library(intel_npu_acceleration_library SHARED src/bindings.cpp)
 
 # Link the OpenVINO libraries
 target_link_libraries(intel_npu_acceleration_library PRIVATE openvino::runtime)
-if (UNIX)
+if (UNIX AND DOWNLOAD_OPENVINO_BINARY)
     set_target_properties(intel_npu_acceleration_library PROPERTIES LINK_FLAGS "-Wl,-rpath,./")
 endif (UNIX)
