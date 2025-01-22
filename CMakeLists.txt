@@ -10,10 +10,11 @@ project(intel_npu_acceleration_library)
 
 set(CMAKE_CXX_STANDARD 14 CACHE STRING "C++ standard to conform to")
 
+# TODO: Align build options with Fedora packaging guidelines
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     # lots of warnings and all warnings as errors
     message(STATUS "Setting GCC/Clang specific flags for the entire build")
-    add_compile_options(-Wall -Wextra -Werror -pedantic -Wdouble-promotion -Wfloat-conversion -march=native)
+    add_compile_options(-Wall -Wextra -Werror -pedantic -Wdouble-promotion -Wfloat-conversion -march=x86-64-v3)
     set(CMAKE_CXX_FLAGS_DEBUG "-g")
     set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
